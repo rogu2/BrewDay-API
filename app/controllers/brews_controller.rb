@@ -1,5 +1,7 @@
-class BrewsController < ApplicationController
-  before_action :set_brew, only: [:show, :update, :destroy]
+# frozen_string_literal: true
+
+class BrewsController < OpenReadController
+  before_action :set_brew, only: %i[show update destroy]
 
   # GET /brews
   def index
@@ -15,7 +17,7 @@ class BrewsController < ApplicationController
 
   # POST /brews
   def create
-    @brew = Brew.new(brew_params)
+    @brew = current_user.brews.build(brew_params)
 
     if @brew.save
       render json: @brew, status: :created, location: @brew
@@ -39,13 +41,14 @@ class BrewsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_brew
-      @brew = Brew.find(params[:id])
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def brew_params
-      params.fetch(:brew, {})
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_brew
+    @brew = current_user.brews.find(params[:id])
+  end
+
+  # Only allow a trusted parameter "white list" through.
+  def brew_params
+    params.require(:brew).permit(:name, :recipe, :steps, :notes)
+  end
 end
