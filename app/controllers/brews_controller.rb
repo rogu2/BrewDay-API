@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BrewsController < OpenReadController
+class BrewsController < ProtectedController
   before_action :set_brew, only: %i[show update destroy]
 
   # GET /brews
@@ -14,6 +14,13 @@ class BrewsController < OpenReadController
   def show
     render json: @brew
   end
+
+  # GET /user_index
+    def user_index
+      @userbrews = current_user.brews.all
+
+      render json: @userbrews
+    end
 
   # POST /brews
   def create
